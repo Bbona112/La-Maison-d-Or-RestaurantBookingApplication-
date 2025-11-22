@@ -10,6 +10,7 @@ export default function Navigation() {
 
   const navLinks = [
     { href: '/', label: 'Home' },
+    { href: '/menu', label: 'Menu' },
     { href: '/booking', label: 'Book Table' },
     { href: '/my-bookings', label: 'My Bookings' },
     { href: '/about', label: 'About' },

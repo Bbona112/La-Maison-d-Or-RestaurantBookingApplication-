@@ -149,6 +149,11 @@ export default function HomePage() {
               <h3 className="text-xl font-bold mb-4">Quick Links</h3>
               <ul className="space-y-2 text-gray-400">
                 <li>
+                  <Link href="/menu" className="hover:text-white">
+                    Menu
+                  </Link>
+                </li>
+                <li>
                   <Link href="/booking" className="hover:text-white">
                     Book Table
                   </Link>
