@@ -1,0 +1,55 @@
+[
+  {
+    "id": "table-a",
+    "name": "Table A",
+    "shape": "round",
+    "x": 150,
+    "y": 150,
+    "radius": 50,
+    "seats": [
+      { "id": 1, "x": 150, "y": 90, "angle": 0 },
+      { "id": 2, "x": 210, "y": 150, "angle": 60 },
+      { "id": 3, "x": 150, "y": 210, "angle": 120 },
+      { "id": 4, "x": 90, "y": 150, "angle": 180 },
+      { "id": 5, "x": 120, "y": 100, "angle": 240 },
+      { "id": 6, "x": 180, "y": 100, "angle": 300 }
+    ],
+    "available": true
+  },
+  {
+    "id": "table-b",
+    "name": "Table B",
+    "shape": "rectangle",
+    "x": 400,
+    "y": 200,
+    "width": 120,
+    "height": 60,
+    "seats": [
+      { "id": 1, "x": 430, "y": 170 },
+      { "id": 2, "x": 550, "y": 200 },
+      { "id": 3, "x": 490, "y": 260 },
+      { "id": 4, "x": 370, "y": 200 }
+    ],
+    "available": true
+  },
+  {
+    "id": "table-c",
+    "name": "Table C",
+    "shape": "square",
+    "x": 250,
+    "y": 400,
+    "width": 80,
+    "height": 80,
+    "seats": [
+      { "id": 1, "x": 250, "y": 360 },
+      { "id": 2, "x": 290, "y": 360 },
+      { "id": 3, "x": 330, "y": 400 },
+      { "id": 4, "x": 330, "y": 440 },
+      { "id": 5, "x": 290, "y": 480 },
+      { "id": 6, "x": 250, "y": 480 },
+      { "id": 7, "x": 210, "y": 440 },
+      { "id": 8, "x": 210, "y": 400 }
+    ],
+    "available": true
+  }
+]

@@ -1,0 +1,56 @@
+================================================================================
+  La Maison d'Or - Restaurant Booking Application
+  QUICK START GUIDE FOR WINDOWS
+================================================================================
+
+🚀 FASTEST WAY TO GET STARTED:
+
+1. Double-click: setup.bat
+   → This installs everything automatically
+
+2. Double-click: start-dev.bat
+   → This starts the development server
+
+3. Open your browser: http://localhost:3000
+   → Your app is now running!
+
+================================================================================
+📋 AVAILABLE BATCH FILES:
+
+setup.bat          → Complete setup (use this first!)
+start-dev.bat      → Start development server
+build.bat          → Build for production
+start-prod.bat     → Start production server
+deploy.bat         → Prepare for deployment
+install.bat        → Install dependencies only
+
+================================================================================
+⚙️ REQUIREMENTS:
+
+- Node.js 18.x or higher
+  Download from: https://nodejs.org/
+
+- Windows OS (these batch files are Windows-specific)
+
+================================================================================
+❓ TROUBLESHOOTING:
+
+Problem: "Node.js is not installed"
+Solution: Install Node.js from https://nodejs.org/ and restart
+
+Problem: "Port 3000 already in use"
+Solution: Close other applications or change port in package.json
+
+Problem: "npm install failed"
+Solution: Check internet connection and try again
+
+================================================================================
+📚 MORE INFORMATION:
+
+- See README.md for full documentation
+- See README_BATCH_FILES.md for batch file details
+- See QUICKSTART.md for general quick start guide
+
+================================================================================
+
+
