@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import MenuCarousel from '@/components/MenuCarousel';
 
 interface MenuItem {
   id: string;
@@ -207,6 +208,7 @@ const categories = [
 export default function MenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'carousel'>('list');
 
   const filteredItems = menuItems.filter((item) => {
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
@@ -244,32 +246,87 @@ export default function MenuPage() {
           />
         </div>
 
-        {/* Category Filter */}
-        <div className="flex flex-wrap gap-4 mb-8">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
-              selectedCategory === 'all'
-                ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white'
-                : 'bg-white text-gray-800 hover:bg-gray-100 shadow-md'
-            }`}
-          >
-            All Items
-          </button>
-          {categories.map((category) => (
+        {/* View Mode Toggle and Category Filter */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+          {/* Category Filter */}
+          <div className="flex flex-wrap gap-4">
             <button
-              key={category.id}
-              onClick={() => setSelectedCategory(category.id)}
-              className={`px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
-                selectedCategory === category.id
+              onClick={() => setSelectedCategory('all')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-colors ${
+                selectedCategory === 'all'
                   ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white'
                   : 'bg-white text-gray-800 hover:bg-gray-100 shadow-md'
               }`}
             >
-              <span>{category.icon}</span>
-              {category.name}
+              All Items
             </button>
-          ))}
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedCategory(category.id)}
+                className={`px-6 py-3 rounded-lg font-semibold transition-colors flex items-center gap-2 ${
+                  selectedCategory === category.id
+                    ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white'
+                    : 'bg-white text-gray-800 hover:bg-gray-100 shadow-md'
+                }`}
+              >
+                <span>{category.icon}</span>
+                {category.name}
+              </button>
+            ))}
+          </div>
+
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-2 bg-white rounded-lg shadow-md p-1">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`px-4 py-2 rounded-md font-semibold transition-colors flex items-center gap-2 ${
+                viewMode === 'list'
+                  ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              title="List View"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+              List
+            </button>
+            <button
+              onClick={() => setViewMode('carousel')}
+              className={`px-4 py-2 rounded-md font-semibold transition-colors flex items-center gap-2 ${
+                viewMode === 'carousel'
+                  ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              title="Carousel View"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                />
+              </svg>
+              Carousel
+            </button>
+          </div>
         </div>
 
         {/* Menu Items */}
@@ -292,42 +349,46 @@ export default function MenuPage() {
                     </h2>
                   </div>
                   <div className="p-6">
-                    <div className="space-y-6">
-                      {categoryItems.map((item) => (
-                        <div
-                          key={item.id}
-                          className="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0"
-                        >
-                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                            <div className="flex-1">
-                              <div className="flex items-start gap-3 mb-2">
-                                <h3 className="text-xl font-semibold text-gray-800">
-                                  {item.name}
-                                </h3>
-                                <div className="flex gap-2 flex-wrap">
-                                  {item.vegetarian && (
-                                    <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
-                                      Vegetarian
-                                    </span>
-                                  )}
-                                  {item.glutenFree && (
-                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
-                                      Gluten Free
-                                    </span>
-                                  )}
+                    {viewMode === 'carousel' ? (
+                      <MenuCarousel items={categoryItems} autoRotate={true} autoRotateInterval={5000} />
+                    ) : (
+                      <div className="space-y-6">
+                        {categoryItems.map((item) => (
+                          <div
+                            key={item.id}
+                            className="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0"
+                          >
+                            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                              <div className="flex-1">
+                                <div className="flex items-start gap-3 mb-2">
+                                  <h3 className="text-xl font-semibold text-gray-800">
+                                    {item.name}
+                                  </h3>
+                                  <div className="flex gap-2 flex-wrap">
+                                    {item.vegetarian && (
+                                      <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded">
+                                        Vegetarian
+                                      </span>
+                                    )}
+                                    {item.glutenFree && (
+                                      <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded">
+                                        Gluten Free
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
+                                <p className="text-gray-600">{item.description}</p>
                               </div>
-                              <p className="text-gray-600">{item.description}</p>
-                            </div>
-                            <div className="sm:ml-4">
-                              <span className="text-2xl font-bold text-amber-600">
-                                {formatPrice(item.price)}
-                              </span>
+                              <div className="sm:ml-4">
+                                <span className="text-2xl font-bold text-amber-600">
+                                  {formatPrice(item.price)}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
               );
