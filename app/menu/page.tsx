@@ -11,6 +11,7 @@ interface MenuItem {
   category: 'appetizers' | 'mains' | 'desserts' | 'drinks';
   vegetarian?: boolean;
   glutenFree?: boolean;
+  image: string;
 }
 
 const menuItems: MenuItem[] = [
@@ -21,6 +22,7 @@ const menuItems: MenuItem[] = [
     description: 'Traditional French snails in garlic herb butter',
     price: 18,
     category: 'appetizers',
+    image: 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=800&q=80',
   },
   {
     id: '2',
@@ -28,6 +30,7 @@ const menuItems: MenuItem[] = [
     description: 'Pan-seared duck liver with fig compote and brioche',
     price: 32,
     category: 'appetizers',
+    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80',
   },
   {
     id: '3',
@@ -36,6 +39,7 @@ const menuItems: MenuItem[] = [
     price: 16,
     category: 'appetizers',
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&q=80',
   },
   {
     id: '4',
@@ -44,6 +48,7 @@ const menuItems: MenuItem[] = [
     price: 14,
     category: 'appetizers',
     vegetarian: true,
+    image: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=800&q=80',
   },
   {
     id: '5',
@@ -52,6 +57,7 @@ const menuItems: MenuItem[] = [
     price: 20,
     category: 'appetizers',
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80',
   },
   
   // Mains
@@ -61,6 +67,7 @@ const menuItems: MenuItem[] = [
     description: 'Braised chicken in red wine with mushrooms and pearl onions',
     price: 28,
     category: 'mains',
+    image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=800&q=80',
   },
   {
     id: '7',
@@ -69,6 +76,7 @@ const menuItems: MenuItem[] = [
     price: 38,
     category: 'mains',
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80',
   },
   {
     id: '8',
@@ -76,6 +84,7 @@ const menuItems: MenuItem[] = [
     description: 'Slow-cooked beef in red wine with carrots and onions',
     price: 42,
     category: 'mains',
+    image: 'https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=800&q=80',
   },
   {
     id: '9',
@@ -83,6 +92,7 @@ const menuItems: MenuItem[] = [
     description: 'Crispy duck leg with roasted potatoes and green beans',
     price: 36,
     category: 'mains',
+    image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=800&q=80',
   },
   {
     id: '10',
@@ -92,6 +102,7 @@ const menuItems: MenuItem[] = [
     category: 'mains',
     vegetarian: true,
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800&q=80',
   },
   {
     id: '11',
@@ -99,6 +110,7 @@ const menuItems: MenuItem[] = [
     description: 'Prime beef tenderloin with béarnaise sauce and pommes frites',
     price: 48,
     category: 'mains',
+    image: 'https://images.unsplash.com/photo-1600804340584-c7db2eacf0bf?w=800&q=80',
   },
   {
     id: '12',
@@ -107,6 +119,7 @@ const menuItems: MenuItem[] = [
     price: 34,
     category: 'mains',
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800&q=80',
   },
   
   // Desserts
@@ -117,6 +130,7 @@ const menuItems: MenuItem[] = [
     price: 12,
     category: 'desserts',
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=800&q=80',
   },
   {
     id: '14',
@@ -125,6 +139,7 @@ const menuItems: MenuItem[] = [
     price: 14,
     category: 'desserts',
     vegetarian: true,
+    image: 'https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=800&q=80',
   },
   {
     id: '15',
@@ -134,6 +149,7 @@ const menuItems: MenuItem[] = [
     category: 'desserts',
     vegetarian: true,
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800&q=80',
   },
   {
     id: '16',
@@ -142,6 +158,7 @@ const menuItems: MenuItem[] = [
     price: 13,
     category: 'desserts',
     vegetarian: true,
+    image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=800&q=80',
   },
   {
     id: '17',
@@ -151,6 +168,7 @@ const menuItems: MenuItem[] = [
     category: 'desserts',
     vegetarian: true,
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800&q=80',
   },
   
   // Drinks
@@ -161,6 +179,7 @@ const menuItems: MenuItem[] = [
     price: 25,
     category: 'drinks',
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1510812431401-e41e7b2d5b8a?w=800&q=80',
   },
   {
     id: '19',
@@ -169,6 +188,7 @@ const menuItems: MenuItem[] = [
     price: 12,
     category: 'drinks',
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1510812431401-e41e7b2d5b8a?w=800&q=80',
   },
   {
     id: '20',
@@ -177,6 +197,7 @@ const menuItems: MenuItem[] = [
     price: 18,
     category: 'drinks',
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1510812431401-e41e7b2d5b8a?w=800&q=80',
   },
   {
     id: '21',
@@ -186,6 +207,7 @@ const menuItems: MenuItem[] = [
     category: 'drinks',
     vegetarian: true,
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=800&q=80',
   },
   {
     id: '22',
@@ -195,6 +217,7 @@ const menuItems: MenuItem[] = [
     category: 'drinks',
     vegetarian: true,
     glutenFree: true,
+    image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=800&q=80',
   },
 ];
 
@@ -356,12 +379,12 @@ export default function MenuPage() {
                         {categoryItems.map((item) => (
                           <div
                             key={item.id}
-                            className="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0"
+                            className="group relative border-b border-gray-200 last:border-b-0 pb-6 last:pb-0"
                           >
                             <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                               <div className="flex-1">
                                 <div className="flex items-start gap-3 mb-2">
-                                  <h3 className="text-xl font-semibold text-gray-800">
+                                  <h3 className="text-xl font-semibold text-gray-800 group-hover:text-amber-600 transition-colors">
                                     {item.name}
                                   </h3>
                                   <div className="flex gap-2 flex-wrap">
@@ -383,6 +406,39 @@ export default function MenuPage() {
                                 <span className="text-2xl font-bold text-amber-600">
                                   {formatPrice(item.price)}
                                 </span>
+                              </div>
+                            </div>
+                            
+                            {/* Hover Image Preview */}
+                            <div className="absolute left-full ml-4 top-0 w-64 h-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none hidden lg:block">
+                              <div className="bg-white rounded-lg shadow-2xl overflow-hidden border-2 border-amber-200">
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80';
+                                  }}
+                                />
+                                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
+                                  <p className="text-white font-semibold text-sm">{item.name}</p>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Mobile Image Preview (shown below item) */}
+                            <div className="mt-4 lg:hidden opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                              <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-amber-200">
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  className="w-full h-48 object-cover"
+                                  onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80';
+                                  }}
+                                />
                               </div>
                             </div>
                           </div>
