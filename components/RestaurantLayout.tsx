@@ -12,6 +12,9 @@ interface RestaurantLayoutProps {
   selectedTableId?: string;
   selectedSeatId?: number;
   disabledSeats?: Set<number>;
+  selectedTime?: string;
+  selectedDate?: string;
+  bookings?: any[];
   onSelectTable: (tableId: string) => void;
   onSelectSeat: (tableId: string, seatId: number) => void;
 }
@@ -21,6 +24,9 @@ const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({
   selectedTableId,
   selectedSeatId,
   disabledSeats = new Set(),
+  selectedTime,
+  selectedDate,
+  bookings = [],
   onSelectTable,
   onSelectSeat,
 }) => {
@@ -74,6 +80,9 @@ const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({
           hoveredTableId={hoveredTableId}
           hoveredSeatId={hoveredSeatId}
           disabledSeats={disabledSeats}
+          selectedTime={selectedTime}
+          selectedDate={selectedDate}
+          bookings={bookings}
           onSelectTable={onSelectTable}
           onSelectSeat={onSelectSeat}
           onTableHover={handleTableHover}
@@ -112,6 +121,9 @@ const KonvaCanvas: React.FC<{
   hoveredTableId?: string;
   hoveredSeatId?: number;
   disabledSeats: Set<number>;
+  selectedTime?: string;
+  selectedDate?: string;
+  bookings?: any[];
   onSelectTable: (tableId: string) => void;
   onSelectSeat: (tableId: string, seatId: number) => void;
   onTableHover: (tableId: string) => void;
@@ -127,6 +139,9 @@ const KonvaCanvas: React.FC<{
   hoveredTableId,
   hoveredSeatId,
   disabledSeats,
+  selectedTime,
+  selectedDate,
+  bookings = [],
   onSelectTable,
   onSelectSeat,
   onTableHover,
@@ -187,23 +202,36 @@ const KonvaCanvas: React.FC<{
             />
             
             {/* Render all tables */}
-            {tables.map((table) => (
-              <TableShapeComponent
-                key={table.id}
-                table={table}
-                isSelected={selectedTableId === table.id}
-                isHovered={hoveredTableId === table.id}
-                selectedSeatId={selectedSeatId}
-                hoveredSeatId={hoveredSeatId}
-                disabledSeats={disabledSeats}
-                onSelect={onSelectTable}
-                onSelectSeat={onSelectSeat}
-                onHover={onTableHover}
-                onLeave={onTableLeave}
-                onSeatHover={onSeatHover}
-                onSeatLeave={onSeatLeave}
-              />
-            ))}
+            {tables.map((table) => {
+              // Determine table status based on bookings
+              const tableBookings = (bookings || []).filter(
+                (booking) =>
+                  booking?.tableId === table.id &&
+                  booking?.date === selectedDate &&
+                  booking?.time === selectedTime
+              );
+              const isBooked = tableBookings.length > 0;
+              const isSelected = selectedTableId === table.id;
+              
+              return (
+                <TableShapeComponent
+                  key={table.id}
+                  table={table}
+                  isSelected={isSelected}
+                  isHovered={hoveredTableId === table.id}
+                  isBooked={isBooked}
+                  selectedSeatId={selectedSeatId}
+                  hoveredSeatId={hoveredSeatId}
+                  disabledSeats={disabledSeats}
+                  onSelect={onSelectTable}
+                  onSelectSeat={onSelectSeat}
+                  onHover={onTableHover}
+                  onLeave={onTableLeave}
+                  onSeatHover={onSeatHover}
+                  onSeatLeave={onSeatLeave}
+                />
+              );
+            })}
             
             {/* Table labels */}
             {tables.map((table) => {
@@ -217,6 +245,27 @@ const KonvaCanvas: React.FC<{
                 labelY = table.y - 25;
               }
               
+              // Determine label color based on status
+              const tableBookings = (bookings || []).filter(
+                (booking) =>
+                  booking?.tableId === table.id &&
+                  booking?.date === selectedDate &&
+                  booking?.time === selectedTime
+              );
+              const isBooked = tableBookings.length > 0;
+              const isSelected = selectedTableId === table.id;
+              
+              let labelColor = '#1f2937'; // Default gray
+              if (isSelected) {
+                labelColor = '#22c55e'; // Bright green for selected
+              } else if (isBooked) {
+                labelColor = '#ef4444'; // Red for booked
+              } else if (table.available) {
+                // Randomly assign yellow or muted green for available tables
+                const tableNum = parseInt(table.name.replace('T', '')) || 0;
+                labelColor = tableNum % 2 === 0 ? '#eab308' : '#86efac'; // Yellow or muted green
+              }
+              
               return (
                 <Text
                   key={`label-${table.id}`}
@@ -226,7 +275,7 @@ const KonvaCanvas: React.FC<{
                   fontSize={18}
                   fontFamily="Arial"
                   fontStyle="bold"
-                  fill="#1f2937"
+                  fill={labelColor}
                   align="center"
                   offsetX={table.name.length * 5}
                   offsetY={9}

@@ -1,12 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BookingFormData } from '@/types';
 
 interface BookingFormProps {
   selectedTableId?: string;
   selectedSeatId?: number;
   tableName?: string;
+  selectedTime?: string;
+  selectedDate?: string;
+  onDateChange?: (date: string) => void;
   onSubmit: (data: BookingFormData) => Promise<void>;
   isLoading?: boolean;
 }
@@ -15,16 +18,32 @@ const BookingForm: React.FC<BookingFormProps> = ({
   selectedTableId,
   selectedSeatId,
   tableName,
+  selectedTime,
+  selectedDate,
+  onDateChange,
   onSubmit,
   isLoading = false,
 }) => {
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
+  
   const [formData, setFormData] = useState<BookingFormData>({
     customerName: '',
     phone: '',
-    date: '',
-    time: '',
+    date: selectedDate || today,
+    time: selectedTime || '',
     numberOfGuests: 1,
   });
+
+  // Update form data when selectedTime or selectedDate changes
+  useEffect(() => {
+    if (selectedTime) {
+      setFormData(prev => ({ ...prev, time: selectedTime }));
+    }
+    if (selectedDate) {
+      setFormData(prev => ({ ...prev, date: selectedDate }));
+    }
+  }, [selectedTime, selectedDate]);
 
   const [errors, setErrors] = useState<Partial<Record<keyof BookingFormData, string>>>({});
 
@@ -36,9 +55,6 @@ const BookingForm: React.FC<BookingFormProps> = ({
       timeSlots.push(timeString);
     }
   }
-
-  // Get today's date in YYYY-MM-DD format
-  const today = new Date().toISOString().split('T')[0];
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof BookingFormData, string>> = {};
@@ -82,12 +98,12 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
     if (validate()) {
       await onSubmit(formData);
-      // Reset form after successful submission
+      // Reset form after successful submission (but keep date and time from props)
       setFormData({
         customerName: '',
         phone: '',
-        date: '',
-        time: '',
+        date: selectedDate || today,
+        time: selectedTime || '',
         numberOfGuests: 1,
       });
     }
@@ -176,9 +192,15 @@ const BookingForm: React.FC<BookingFormProps> = ({
           <input
             type="date"
             id="date"
-            value={formData.date}
+            value={formData.date || selectedDate || today}
             min={today}
-            onChange={(e) => handleChange('date', e.target.value)}
+            onChange={(e) => {
+              handleChange('date', e.target.value);
+              // Update selectedDate in parent component
+              if (onDateChange) {
+                onDateChange(e.target.value);
+              }
+            }}
             className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
               errors.date ? 'border-red-500' : 'border-gray-300'
             }`}
@@ -188,30 +210,24 @@ const BookingForm: React.FC<BookingFormProps> = ({
           )}
         </div>
 
-        {/* Time */}
-        <div>
-          <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
-            Time *
-          </label>
-          <select
-            id="time"
-            value={formData.time}
-            onChange={(e) => handleChange('time', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-              errors.time ? 'border-red-500' : 'border-gray-300'
-            }`}
-          >
-            <option value="">Select a time</option>
-            {timeSlots.map((time) => (
-              <option key={time} value={time}>
-                {time}
-              </option>
-            ))}
-          </select>
-          {errors.time && (
-            <p className="mt-1 text-sm text-red-600">{errors.time}</p>
-          )}
-        </div>
+        {/* Time - Read-only display since using timeline selector */}
+        {selectedTime && (
+          <div>
+            <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
+              Selected Time *
+            </label>
+            <input
+              type="text"
+              id="time"
+              value={formData.time || selectedTime}
+              readOnly
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-not-allowed"
+            />
+            <p className="mt-1 text-xs text-gray-500">
+              Use the timeline above to change the time
+            </p>
+          </div>
+        )}
 
         {/* Number of Guests */}
         <div>

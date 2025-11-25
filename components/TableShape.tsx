@@ -8,6 +8,7 @@ interface TableShapeProps {
   table: Table;
   isSelected: boolean;
   isHovered: boolean;
+  isBooked?: boolean;
   selectedSeatId?: number;
   hoveredSeatId?: number;
   disabledSeats?: Set<number>;
@@ -23,6 +24,7 @@ const TableShapeComponent: React.FC<TableShapeProps> = ({
   table,
   isSelected,
   isHovered,
+  isBooked = false,
   selectedSeatId,
   hoveredSeatId,
   disabledSeats = new Set(),
@@ -50,13 +52,33 @@ const TableShapeComponent: React.FC<TableShapeProps> = ({
 
   const { Circle, Rect } = KonvaComponents;
 
-  const tableColor = table.available ? '#38b000' : '#9ca3af';
-  const strokeColor = isSelected ? '#2563eb' : isHovered ? '#60a5fa' : '#22c55e';
+  // Determine table color based on status
+  let tableColor = '#9ca3af'; // Default gray
+  let strokeColor = '#6b7280';
+  
+  if (isBooked) {
+    tableColor = '#ef4444'; // Red for booked
+    strokeColor = '#dc2626';
+  } else if (isSelected) {
+    tableColor = '#22c55e'; // Bright green for selected
+    strokeColor = '#16a34a';
+  } else if (table.available) {
+    // Randomly assign yellow or muted green for available tables
+    const tableNum = parseInt(table.name.replace('T', '')) || 0;
+    if (tableNum % 2 === 0) {
+      tableColor = '#eab308'; // Yellow
+      strokeColor = '#ca8a04';
+    } else {
+      tableColor = '#86efac'; // Muted green
+      strokeColor = '#4ade80';
+    }
+  }
+  
   const strokeWidth = isSelected ? 4 : isHovered ? 3 : 2;
   const shadowBlur = isSelected ? 15 : isHovered ? 10 : 0;
 
   const handleTableClick = () => {
-    if (table.available) {
+    if (table.available && !isBooked) {
       onSelect(table.id);
     }
   };
@@ -76,9 +98,9 @@ const TableShapeComponent: React.FC<TableShapeProps> = ({
           shadowColor={isSelected ? '#2563eb' : '#60a5fa'}
           shadowOpacity={isSelected ? 0.6 : isHovered ? 0.4 : 0}
           onClick={handleTableClick}
-          onMouseEnter={() => table.available && onHover(table.id)}
+          onMouseEnter={() => table.available && !isBooked && onHover(table.id)}
           onMouseLeave={onLeave}
-          listening={table.available}
+          listening={table.available && !isBooked}
         />
       );
     } else if ((table.shape === 'rectangle' || table.shape === 'square') && table.width && table.height) {
@@ -97,9 +119,9 @@ const TableShapeComponent: React.FC<TableShapeProps> = ({
           shadowOpacity={isSelected ? 0.6 : isHovered ? 0.4 : 0}
           cornerRadius={table.shape === 'square' ? 4 : 2}
           onClick={handleTableClick}
-          onMouseEnter={() => table.available && onHover(table.id)}
+          onMouseEnter={() => table.available && !isBooked && onHover(table.id)}
           onMouseLeave={onLeave}
-          listening={table.available}
+          listening={table.available && !isBooked}
         />
       );
     }

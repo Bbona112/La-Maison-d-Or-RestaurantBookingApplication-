@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import BookingForm from '@/components/BookingForm';
+import TimeSelector from '@/components/TimeSelector';
 import { Table, BookingFormData } from '@/types';
 
 // Dynamically import RestaurantLayout to avoid SSR issues with Konva
@@ -25,18 +26,61 @@ export default function BookingPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [bookingId, setBookingId] = useState<string>('');
+  const [selectedTime, setSelectedTime] = useState<string>('21:00'); // Default to 9:00 PM
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [bookings, setBookings] = useState<any[]>([]);
 
-  // Fetch tables on component mount
+  // Set default date to today
   useEffect(() => {
-    fetchTables();
+    const today = new Date().toISOString().split('T')[0];
+    setSelectedDate(today);
   }, []);
+
+  // Fetch bookings first, then tables
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  // Update tables when bookings, time, or date changes
+  useEffect(() => {
+    if (bookings.length >= 0 && selectedDate && selectedTime) {
+      fetchTables();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookings, selectedTime, selectedDate]);
+
+  const fetchBookings = async () => {
+    try {
+      const response = await fetch('/api/bookings');
+      if (response.ok) {
+        const data = await response.json();
+        setBookings(data);
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    }
+  };
 
   const fetchTables = async () => {
     try {
       const response = await fetch('/api/tables');
       if (response.ok) {
         const data = await response.json();
-        setTables(data);
+        // Update table availability based on selected date and time
+        const updatedTables = data.map((table: Table) => {
+          const tableBookings = bookings.filter(
+            (booking) =>
+              booking.tableId === table.id &&
+              booking.date === selectedDate &&
+              booking.time === selectedTime
+          );
+          return {
+            ...table,
+            available: tableBookings.length === 0,
+            isBooked: tableBookings.length > 0,
+          };
+        });
+        setTables(updatedTables);
       }
     } catch (error) {
       console.error('Error fetching tables:', error);
@@ -59,6 +103,16 @@ export default function BookingPage() {
       return;
     }
 
+    if (!selectedTime) {
+      alert('Please select a time from the timeline');
+      return;
+    }
+
+    if (!selectedDate) {
+      alert('Please select a date');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await fetch('/api/book', {
@@ -70,6 +124,9 @@ export default function BookingPage() {
           tableId: selectedTableId,
           seatId: selectedSeatId,
           ...formData,
+          // Ensure time and date are set from timeline/date picker
+          time: formData.time || selectedTime,
+          date: formData.date || selectedDate,
         }),
       });
 
@@ -80,8 +137,9 @@ export default function BookingPage() {
         // Reset selections
         setSelectedTableId(undefined);
         setSelectedSeatId(undefined);
-        // Refresh tables to update availability
-        await fetchTables();
+        // Refresh bookings and tables to update availability
+        await fetchBookings();
+        // fetchTables will be called automatically via useEffect when bookings update
       } else {
         const error = await response.json();
         alert(error.message || 'Failed to create booking. Please try again.');
@@ -108,6 +166,11 @@ export default function BookingPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
+        {/* Time Selector */}
+        <div className="mb-6">
+          <TimeSelector selectedTime={selectedTime} onTimeChange={setSelectedTime} />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
           {/* Left Side - Floor Layout */}
           <div className="order-2 lg:order-1 w-full">
@@ -133,9 +196,32 @@ export default function BookingPage() {
                 selectedTableId={selectedTableId}
                 selectedSeatId={selectedSeatId}
                 disabledSeats={disabledSeats}
+                selectedTime={selectedTime}
+                selectedDate={selectedDate}
+                bookings={bookings}
                 onSelectTable={handleSelectTable}
                 onSelectSeat={handleSelectSeat}
               />
+            </div>
+            
+            {/* Legend */}
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-sm">
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-green-500 border-2 border-green-600"></div>
+                <span className="text-gray-700">Selected</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-green-300 border-2 border-green-500"></div>
+                <span className="text-gray-700">Available</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-yellow-400 border-2 border-yellow-600"></div>
+                <span className="text-gray-700">Available</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 rounded-full bg-red-500 border-2 border-red-600"></div>
+                <span className="text-gray-700">Booked</span>
+              </div>
             </div>
           </div>
 
@@ -145,6 +231,9 @@ export default function BookingPage() {
               selectedTableId={selectedTableId}
               selectedSeatId={selectedSeatId}
               tableName={selectedTable?.name}
+              selectedTime={selectedTime}
+              selectedDate={selectedDate}
+              onDateChange={setSelectedDate}
               onSubmit={handleSubmitBooking}
               isLoading={isLoading}
             />
