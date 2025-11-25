@@ -1,15 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BookingFormData } from '@/types';
 
 interface BookingFormProps {
   selectedTableId?: string;
   selectedSeatId?: number;
   tableName?: string;
-  selectedTime?: string;
-  selectedDate?: string;
-  onDateChange?: (date: string) => void;
   onSubmit: (data: BookingFormData) => Promise<void>;
   isLoading?: boolean;
 }
@@ -18,32 +15,16 @@ const BookingForm: React.FC<BookingFormProps> = ({
   selectedTableId,
   selectedSeatId,
   tableName,
-  selectedTime,
-  selectedDate,
-  onDateChange,
   onSubmit,
   isLoading = false,
 }) => {
-  // Get today's date in YYYY-MM-DD format
-  const today = new Date().toISOString().split('T')[0];
-  
   const [formData, setFormData] = useState<BookingFormData>({
     customerName: '',
     phone: '',
-    date: selectedDate || today,
-    time: selectedTime || '',
+    date: '',
+    time: '',
     numberOfGuests: 1,
   });
-
-  // Update form data when selectedTime or selectedDate changes
-  useEffect(() => {
-    if (selectedTime) {
-      setFormData(prev => ({ ...prev, time: selectedTime }));
-    }
-    if (selectedDate) {
-      setFormData(prev => ({ ...prev, date: selectedDate }));
-    }
-  }, [selectedTime, selectedDate]);
 
   const [errors, setErrors] = useState<Partial<Record<keyof BookingFormData, string>>>({});
 
@@ -55,6 +36,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
       timeSlots.push(timeString);
     }
   }
+
+  // Get today's date in YYYY-MM-DD format
+  const today = new Date().toISOString().split('T')[0];
 
   const validate = (): boolean => {
     const newErrors: Partial<Record<keyof BookingFormData, string>> = {};
@@ -98,12 +82,11 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
     if (validate()) {
       await onSubmit(formData);
-      // Reset form after successful submission (but keep date and time from props)
       setFormData({
         customerName: '',
         phone: '',
-        date: selectedDate || today,
-        time: selectedTime || '',
+        date: '',
+        time: '',
         numberOfGuests: 1,
       });
     }
@@ -111,161 +94,154 @@ const BookingForm: React.FC<BookingFormProps> = ({
 
   const handleChange = (field: keyof BookingFormData, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 h-full">
-      <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4 sm:mb-6">Booking Details</h2>
+    <div className="card shadow-sm border-0 h-100">
+      <div className="card-body p-4">
+        <h2 className="h3 fw-bold mb-4">Booking Details</h2>
 
-      {/* Selected Table Info */}
-      <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-gray-600">Selected Table</p>
-            <p className="text-lg font-semibold text-gray-800">
-              {tableName || 'None'}
-            </p>
-            {selectedSeatId && (
-              <p className="text-sm text-gray-600 mt-1">
-                Seat: {selectedSeatId}
+        {/* Selected Table Info */}
+        <div className="alert alert-info mb-4">
+          <div className="d-flex justify-content-between align-items-center">
+            <div>
+              <p className="small mb-1 text-muted">Selected Table</p>
+              <p className="h5 fw-semibold mb-0">
+                {tableName || 'None'}
+              </p>
+              {selectedSeatId && (
+                <p className="small text-muted mt-1 mb-0">
+                  Seat: {selectedSeatId}
+                </p>
+              )}
+            </div>
+            {!selectedTableId && (
+              <p className="small text-warning mb-0 fst-italic">
+                Click on a table to select
               </p>
             )}
           </div>
-          {!selectedTableId && (
-            <p className="text-sm text-amber-600 italic">
-              Click on a table to select
-            </p>
-          )}
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Customer Name */}
-        <div>
-          <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-1">
-            Full Name *
-          </label>
-          <input
-            type="text"
-            id="customerName"
-            value={formData.customerName}
-            onChange={(e) => handleChange('customerName', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-              errors.customerName ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="John Doe"
-          />
-          {errors.customerName && (
-            <p className="mt-1 text-sm text-red-600">{errors.customerName}</p>
-          )}
         </div>
 
-        {/* Phone */}
-        <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-            Phone Number *
-          </label>
-          <input
-            type="tel"
-            id="phone"
-            value={formData.phone}
-            onChange={(e) => handleChange('phone', e.target.value)}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-              errors.phone ? 'border-red-500' : 'border-gray-300'
-            }`}
-            placeholder="+1 (555) 123-4567"
-          />
-          {errors.phone && (
-            <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
-          )}
-        </div>
-
-        {/* Date */}
-        <div>
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
-            Date *
-          </label>
-          <input
-            type="date"
-            id="date"
-            value={formData.date || selectedDate || today}
-            min={today}
-            onChange={(e) => {
-              handleChange('date', e.target.value);
-              // Update selectedDate in parent component
-              if (onDateChange) {
-                onDateChange(e.target.value);
-              }
-            }}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-              errors.date ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-          {errors.date && (
-            <p className="mt-1 text-sm text-red-600">{errors.date}</p>
-          )}
-        </div>
-
-        {/* Time - Read-only display since using timeline selector */}
-        {selectedTime && (
-          <div>
-            <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
-              Selected Time *
+        <form onSubmit={handleSubmit}>
+          {/* Customer Name */}
+          <div className="mb-3">
+            <label htmlFor="customerName" className="form-label">
+              Full Name <span className="text-danger">*</span>
             </label>
             <input
               type="text"
-              id="time"
-              value={formData.time || selectedTime}
-              readOnly
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-700 cursor-not-allowed"
+              id="customerName"
+              className={`form-control ${errors.customerName ? 'is-invalid' : ''}`}
+              value={formData.customerName}
+              onChange={(e) => handleChange('customerName', e.target.value)}
+              placeholder="John Doe"
             />
-            <p className="mt-1 text-xs text-gray-500">
-              Use the timeline above to change the time
-            </p>
+            {errors.customerName && (
+              <div className="invalid-feedback">{errors.customerName}</div>
+            )}
           </div>
-        )}
 
-        {/* Number of Guests */}
-        <div>
-          <label htmlFor="numberOfGuests" className="block text-sm font-medium text-gray-700 mb-1">
-            Number of Guests *
-          </label>
-          <input
-            type="number"
-            id="numberOfGuests"
-            min="1"
-            max="20"
-            value={formData.numberOfGuests}
-            onChange={(e) => handleChange('numberOfGuests', parseInt(e.target.value) || 1)}
-            className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-              errors.numberOfGuests ? 'border-red-500' : 'border-gray-300'
-            }`}
-          />
-          {errors.numberOfGuests && (
-            <p className="mt-1 text-sm text-red-600">{errors.numberOfGuests}</p>
-          )}
-        </div>
+          {/* Phone */}
+          <div className="mb-3">
+            <label htmlFor="phone" className="form-label">
+              Phone Number <span className="text-danger">*</span>
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
+              value={formData.phone}
+              onChange={(e) => handleChange('phone', e.target.value)}
+              placeholder="+1 (555) 123-4567"
+            />
+            {errors.phone && (
+              <div className="invalid-feedback">{errors.phone}</div>
+            )}
+          </div>
 
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={!selectedTableId || isLoading}
-          className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-200 ${
-            !selectedTableId || isLoading
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5'
-          }`}
-        >
-          {isLoading ? 'Booking...' : 'Confirm Booking'}
-        </button>
-      </form>
+          {/* Date */}
+          <div className="mb-3">
+            <label htmlFor="date" className="form-label">
+              Date <span className="text-danger">*</span>
+            </label>
+            <input
+              type="date"
+              id="date"
+              className={`form-control ${errors.date ? 'is-invalid' : ''}`}
+              value={formData.date}
+              min={today}
+              onChange={(e) => handleChange('date', e.target.value)}
+            />
+            {errors.date && (
+              <div className="invalid-feedback">{errors.date}</div>
+            )}
+          </div>
+
+          {/* Time */}
+          <div className="mb-3">
+            <label htmlFor="time" className="form-label">
+              Time <span className="text-danger">*</span>
+            </label>
+            <select
+              id="time"
+              className={`form-select ${errors.time ? 'is-invalid' : ''}`}
+              value={formData.time}
+              onChange={(e) => handleChange('time', e.target.value)}
+            >
+              <option value="">Select a time</option>
+              {timeSlots.map((time) => (
+                <option key={time} value={time}>
+                  {time}
+                </option>
+              ))}
+            </select>
+            {errors.time && (
+              <div className="invalid-feedback">{errors.time}</div>
+            )}
+          </div>
+
+          {/* Number of Guests */}
+          <div className="mb-4">
+            <label htmlFor="numberOfGuests" className="form-label">
+              Number of Guests <span className="text-danger">*</span>
+            </label>
+            <input
+              type="number"
+              id="numberOfGuests"
+              className={`form-control ${errors.numberOfGuests ? 'is-invalid' : ''}`}
+              min="1"
+              max="20"
+              value={formData.numberOfGuests}
+              onChange={(e) => handleChange('numberOfGuests', parseInt(e.target.value) || 1)}
+            />
+            {errors.numberOfGuests && (
+              <div className="invalid-feedback">{errors.numberOfGuests}</div>
+            )}
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={!selectedTableId || isLoading}
+            className="btn btn-primary w-100 py-3 fw-semibold"
+          >
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Booking...
+              </>
+            ) : (
+              'Confirm Booking'
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };
 
 export default BookingForm;
-

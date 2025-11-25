@@ -17,20 +17,17 @@ export default function AdminPage() {
   const loadBookings = async () => {
     setIsLoading(true);
     try {
-      // Try to fetch from API if available
       const response = await fetch('/api/bookings');
       if (response.ok) {
         const data = await response.json();
         setBookings(data);
       } else {
-        // Fallback to localStorage
         const stored = localStorage.getItem('bookings');
         if (stored) {
           setBookings(JSON.parse(stored));
         }
       }
     } catch (error) {
-      // Fallback to localStorage
       const stored = localStorage.getItem('bookings');
       if (stored) {
         setBookings(JSON.parse(stored));
@@ -55,7 +52,6 @@ export default function AdminPage() {
   };
 
   const filteredBookings = bookings.filter((booking) => {
-    // Filter by date
     const bookingDate = new Date(booking.date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -69,7 +65,6 @@ export default function AdminPage() {
       dateMatch = bookingDateOnly >= today;
     }
 
-    // Filter by search term
     const searchMatch =
       !searchTerm ||
       booking.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -99,176 +94,144 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-amber-50">
+    <div className="min-vh-100" style={{ background: 'linear-gradient(to bottom right, #dbeafe, #ffffff, #fef3c7)' }}>
       {/* Header */}
-      <header className="bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg">
-        <div className="container mx-auto px-4 py-6">
-          <h1 className="text-4xl font-bold mb-2">Admin Dashboard</h1>
-          <p className="text-amber-100 text-lg">Manage restaurant bookings</p>
+      <header className="py-4" style={{ background: 'linear-gradient(to right, #d97706, #ea580c)' }}>
+        <div className="container">
+          <h1 className="display-4 fw-bold text-white mb-2">Admin Dashboard</h1>
+          <p className="lead text-white" style={{ color: '#fef3c7' }}>Manage restaurant bookings</p>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 sm:py-8 max-w-7xl">
+      <main className="container py-5">
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Total Bookings</h3>
-            <p className="text-3xl font-bold text-gray-800">{stats.total}</p>
+        <div className="row g-4 mb-4">
+          <div className="col-md-4">
+            <div className="card shadow-sm border-0">
+              <div className="card-body">
+                <h3 className="small fw-medium text-muted mb-2">Total Bookings</h3>
+                <p className="display-6 fw-bold mb-0">{stats.total}</p>
+              </div>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Today</h3>
-            <p className="text-3xl font-bold text-blue-600">{stats.today}</p>
+          <div className="col-md-4">
+            <div className="card shadow-sm border-0">
+              <div className="card-body">
+                <h3 className="small fw-medium text-muted mb-2">Today</h3>
+                <p className="display-6 fw-bold text-primary mb-0">{stats.today}</p>
+              </div>
+            </div>
           </div>
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Upcoming</h3>
-            <p className="text-3xl font-bold text-green-600">{stats.upcoming}</p>
+          <div className="col-md-4">
+            <div className="card shadow-sm border-0">
+              <div className="card-body">
+                <h3 className="small fw-medium text-muted mb-2">Upcoming</h3>
+                <p className="display-6 fw-bold text-success mb-0">{stats.upcoming}</p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Search by name, phone, booking ID, or table..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                  filter === 'all'
-                    ? 'bg-amber-600 text-white'
-                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                }`}
-              >
-                All
-              </button>
-              <button
-                onClick={() => setFilter('today')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                  filter === 'today'
-                    ? 'bg-amber-600 text-white'
-                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                }`}
-              >
-                Today
-              </button>
-              <button
-                onClick={() => setFilter('upcoming')}
-                className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
-                  filter === 'upcoming'
-                    ? 'bg-amber-600 text-white'
-                    : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
-                }`}
-              >
-                Upcoming
-              </button>
+        <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body p-4">
+            <div className="d-flex flex-column flex-md-row gap-3">
+              <div className="flex-grow-1">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Search by name, phone, booking ID, or table..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <div className="btn-group" role="group">
+                <button
+                  onClick={() => setFilter('all')}
+                  className={`btn ${filter === 'all' ? 'btn-warning' : 'btn-light'}`}
+                >
+                  All
+                </button>
+                <button
+                  onClick={() => setFilter('today')}
+                  className={`btn ${filter === 'today' ? 'btn-warning' : 'btn-light'}`}
+                >
+                  Today
+                </button>
+                <button
+                  onClick={() => setFilter('upcoming')}
+                  className={`btn ${filter === 'upcoming' ? 'btn-warning' : 'btn-light'}`}
+                >
+                  Upcoming
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Bookings Table */}
         {isLoading ? (
-          <div className="text-center py-12">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-600"></div>
-            <p className="mt-4 text-gray-600">Loading bookings...</p>
+          <div className="text-center py-5">
+            <div className="spinner-border text-warning" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <p className="mt-3 text-muted">Loading bookings...</p>
           </div>
         ) : filteredBookings.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-            <svg
-              className="mx-auto h-16 w-16 text-gray-400 mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
-            <h3 className="text-2xl font-semibold text-gray-800 mb-2">
-              No Bookings Found
-            </h3>
-            <p className="text-gray-600">
-              {searchTerm || filter !== 'all'
-                ? 'Try adjusting your filters'
-                : 'No bookings have been made yet'}
-            </p>
+          <div className="card shadow-sm border-0 text-center">
+            <div className="card-body p-5">
+              <i className="bi bi-calendar-x fs-1 text-muted mb-3 d-block"></i>
+              <h3 className="h4 fw-semibold mb-2">No Bookings Found</h3>
+              <p className="text-muted mb-0">
+                {searchTerm || filter !== 'all'
+                  ? 'Try adjusting your filters'
+                  : 'No bookings have been made yet'}
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
+          <div className="card shadow-sm border-0">
+            <div className="table-responsive">
+              <table className="table table-hover mb-0">
+                <thead className="table-light">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Booking ID
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Customer
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date & Time
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Table
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Guests
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Phone
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
+                    <th scope="col">Booking ID</th>
+                    <th scope="col">Customer</th>
+                    <th scope="col">Date & Time</th>
+                    <th scope="col">Table</th>
+                    <th scope="col">Guests</th>
+                    <th scope="col">Phone</th>
+                    <th scope="col">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody>
                   {filteredBookings.map((booking) => (
-                    <tr key={booking.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-mono text-gray-900">
+                    <tr key={booking.id}>
+                      <td>
+                        <span className="font-monospace small">
                           {booking.id.substring(0, 8)}...
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {booking.customerName}
-                        </div>
+                      <td className="fw-medium">{booking.customerName}</td>
+                      <td>
+                        <div>{format(new Date(booking.date), 'MMM dd, yyyy')}</div>
+                        <div className="small text-muted">{booking.time}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">
-                          {format(new Date(booking.date), 'MMM dd, yyyy')}
-                        </div>
-                        <div className="text-sm text-gray-500">{booking.time}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{booking.tableId}</div>
+                      <td>
+                        <div>{booking.tableId}</div>
                         {booking.seatId && (
-                          <div className="text-sm text-gray-500">Seat {booking.seatId}</div>
+                          <div className="small text-muted">Seat {booking.seatId}</div>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                          {booking.numberOfGuests}
-                        </span>
+                      <td>
+                        <span className="badge bg-primary">{booking.numberOfGuests}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {booking.phone}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <td className="text-muted">{booking.phone}</td>
+                      <td>
                         <button
                           onClick={() => handleDeleteBooking(booking.id)}
-                          className="text-red-600 hover:text-red-900"
+                          className="btn btn-sm btn-danger"
                         >
                           Delete
                         </button>
@@ -284,4 +247,3 @@ export default function AdminPage() {
     </div>
   );
 }
-

@@ -12,9 +12,6 @@ interface RestaurantLayoutProps {
   selectedTableId?: string;
   selectedSeatId?: number;
   disabledSeats?: Set<number>;
-  selectedTime?: string;
-  selectedDate?: string;
-  bookings?: any[];
   onSelectTable: (tableId: string) => void;
   onSelectSeat: (tableId: string, seatId: number) => void;
 }
@@ -24,9 +21,6 @@ const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({
   selectedTableId,
   selectedSeatId,
   disabledSeats = new Set(),
-  selectedTime,
-  selectedDate,
-  bookings = [],
   onSelectTable,
   onSelectSeat,
 }) => {
@@ -60,51 +54,50 @@ const RestaurantLayout: React.FC<RestaurantLayoutProps> = ({
 
   if (!isClient) {
     return (
-      <div className="border-2 border-gray-300 rounded-lg shadow-lg bg-gradient-to-br from-amber-50 to-orange-50 p-4">
-        <div className="flex items-center justify-center min-h-[640px]">
-          <div className="text-gray-500">Loading floor plan...</div>
+      <div className="card shadow-sm border-0">
+        <div className="card-body d-flex align-items-center justify-content-center" style={{ minHeight: '640px' }}>
+          <div className="text-muted">Loading floor plan...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="border-2 border-gray-300 rounded-lg shadow-lg bg-gradient-to-br from-amber-50 to-orange-50 p-2 sm:p-4 w-full">
-      <div className="overflow-x-auto -mx-2 sm:mx-0">
-        <KonvaCanvas
-          roomWidth={roomWidth}
-          roomHeight={roomHeight}
-          tables={tables}
-          selectedTableId={selectedTableId}
-          selectedSeatId={selectedSeatId}
-          hoveredTableId={hoveredTableId}
-          hoveredSeatId={hoveredSeatId}
-          disabledSeats={disabledSeats}
-          selectedTime={selectedTime}
-          selectedDate={selectedDate}
-          bookings={bookings}
-          onSelectTable={onSelectTable}
-          onSelectSeat={onSelectSeat}
-          onTableHover={handleTableHover}
-          onTableLeave={handleTableLeave}
-          onSeatHover={handleSeatHover}
-          onSeatLeave={handleSeatLeave}
-        />
-      </div>
-      
-      {/* Legend */}
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-xs sm:text-sm px-2">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-table-green border-2 border-green-600"></div>
-          <span className="text-gray-700">Available Table</span>
+    <div className="card shadow-sm border-0">
+      <div className="card-body p-2 p-md-4">
+        <div className="overflow-auto">
+          <KonvaCanvas
+            roomWidth={roomWidth}
+            roomHeight={roomHeight}
+            tables={tables}
+            selectedTableId={selectedTableId}
+            selectedSeatId={selectedSeatId}
+            hoveredTableId={hoveredTableId}
+            hoveredSeatId={hoveredSeatId}
+            disabledSeats={disabledSeats}
+            onSelectTable={onSelectTable}
+            onSelectSeat={onSelectSeat}
+            onTableHover={handleTableHover}
+            onTableLeave={handleTableLeave}
+            onSeatHover={handleSeatHover}
+            onSeatLeave={handleSeatLeave}
+          />
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-seat-blue"></div>
-          <span className="text-gray-700">Seat</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-gray-400 border-2 border-gray-500"></div>
-          <span className="text-gray-700">Reserved</span>
+        
+        {/* Legend */}
+        <div className="mt-4 d-flex flex-wrap align-items-center justify-content-center gap-3 small">
+          <div className="d-flex align-items-center gap-2">
+            <div className="rounded-circle border border-success" style={{ width: '16px', height: '16px', backgroundColor: '#38b000' }}></div>
+            <span className="text-muted">Available Table</span>
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <div className="rounded-circle" style={{ width: '12px', height: '12px', backgroundColor: '#1e40af' }}></div>
+            <span className="text-muted">Seat</span>
+          </div>
+          <div className="d-flex align-items-center gap-2">
+            <div className="rounded-circle border border-secondary" style={{ width: '16px', height: '16px', backgroundColor: '#9ca3af' }}></div>
+            <span className="text-muted">Reserved</span>
+          </div>
         </div>
       </div>
     </div>
@@ -121,9 +114,6 @@ const KonvaCanvas: React.FC<{
   hoveredTableId?: string;
   hoveredSeatId?: number;
   disabledSeats: Set<number>;
-  selectedTime?: string;
-  selectedDate?: string;
-  bookings?: any[];
   onSelectTable: (tableId: string) => void;
   onSelectSeat: (tableId: string, seatId: number) => void;
   onTableHover: (tableId: string) => void;
@@ -139,9 +129,6 @@ const KonvaCanvas: React.FC<{
   hoveredTableId,
   hoveredSeatId,
   disabledSeats,
-  selectedTime,
-  selectedDate,
-  bookings = [],
   onSelectTable,
   onSelectSeat,
   onTableHover,
@@ -164,8 +151,8 @@ const KonvaCanvas: React.FC<{
 
   if (!KonvaComponents) {
     return (
-      <div className="flex items-center justify-center min-h-[640px]">
-        <div className="text-gray-500">Loading floor plan...</div>
+      <div className="d-flex align-items-center justify-content-center" style={{ minHeight: '640px' }}>
+        <div className="text-muted">Loading floor plan...</div>
       </div>
     );
   }
@@ -173,8 +160,8 @@ const KonvaCanvas: React.FC<{
   const { Stage, Layer, Rect, Text } = KonvaComponents;
 
   return (
-    <div className="flex justify-center w-full">
-      <div className="inline-block min-w-0">
+    <div className="d-flex justify-content-center w-100">
+      <div className="d-inline-block">
         <Stage width={roomWidth + 40} height={roomHeight + 40}>
           <Layer>
             {/* Room background */}
@@ -202,68 +189,33 @@ const KonvaCanvas: React.FC<{
             />
             
             {/* Render all tables */}
-            {tables.map((table) => {
-              // Determine table status based on bookings
-              const tableBookings = (bookings || []).filter(
-                (booking) =>
-                  booking?.tableId === table.id &&
-                  booking?.date === selectedDate &&
-                  booking?.time === selectedTime
-              );
-              const isBooked = tableBookings.length > 0;
-              const isSelected = selectedTableId === table.id;
-              
-              return (
-                <TableShapeComponent
-                  key={table.id}
-                  table={table}
-                  isSelected={isSelected}
-                  isHovered={hoveredTableId === table.id}
-                  isBooked={isBooked}
-                  selectedSeatId={selectedSeatId}
-                  hoveredSeatId={hoveredSeatId}
-                  disabledSeats={disabledSeats}
-                  onSelect={onSelectTable}
-                  onSelectSeat={onSelectSeat}
-                  onHover={onTableHover}
-                  onLeave={onTableLeave}
-                  onSeatHover={onSeatHover}
-                  onSeatLeave={onSeatLeave}
-                />
-              );
-            })}
+            {tables.map((table) => (
+              <TableShapeComponent
+                key={table.id}
+                table={table}
+                isSelected={selectedTableId === table.id}
+                isHovered={hoveredTableId === table.id}
+                selectedSeatId={selectedSeatId}
+                hoveredSeatId={hoveredSeatId}
+                disabledSeats={disabledSeats}
+                onSelect={onSelectTable}
+                onSelectSeat={onSelectSeat}
+                onHover={onTableHover}
+                onLeave={onTableLeave}
+                onSeatHover={onSeatHover}
+                onSeatLeave={onSeatLeave}
+              />
+            ))}
             
             {/* Table labels */}
             {tables.map((table) => {
               let labelX = table.x;
               let labelY = table.y;
               
-              // Position label above the table
               if (table.shape === 'round' && table.radius) {
                 labelY = table.y - table.radius - 25;
               } else if (table.width && table.height) {
                 labelY = table.y - 25;
-              }
-              
-              // Determine label color based on status
-              const tableBookings = (bookings || []).filter(
-                (booking) =>
-                  booking?.tableId === table.id &&
-                  booking?.date === selectedDate &&
-                  booking?.time === selectedTime
-              );
-              const isBooked = tableBookings.length > 0;
-              const isSelected = selectedTableId === table.id;
-              
-              let labelColor = '#1f2937'; // Default gray
-              if (isSelected) {
-                labelColor = '#22c55e'; // Bright green for selected
-              } else if (isBooked) {
-                labelColor = '#ef4444'; // Red for booked
-              } else if (table.available) {
-                // Randomly assign yellow or muted green for available tables
-                const tableNum = parseInt(table.name.replace('T', '')) || 0;
-                labelColor = tableNum % 2 === 0 ? '#eab308' : '#86efac'; // Yellow or muted green
               }
               
               return (
@@ -275,7 +227,7 @@ const KonvaCanvas: React.FC<{
                   fontSize={18}
                   fontFamily="Arial"
                   fontStyle="bold"
-                  fill={labelColor}
+                  fill="#1f2937"
                   align="center"
                   offsetX={table.name.length * 5}
                   offsetY={9}

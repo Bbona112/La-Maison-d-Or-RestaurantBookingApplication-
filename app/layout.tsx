@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap-icons/font/bootstrap-icons.css'
 import './globals.css'
 import Navigation from '@/components/Navigation'
+import BootstrapClient from '@/components/BootstrapClient'
 
 export const metadata: Metadata = {
   title: 'Restaurant Table Booking - La Maison d\'Or',
@@ -17,9 +20,8 @@ export default function RootLayout({
       <body>
         <Navigation />
         {children}
+        <BootstrapClient />
       </body>
     </html>
   )
 }
-
-
